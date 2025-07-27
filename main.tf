@@ -73,19 +73,17 @@ resource "aws_key_pair" "dev_env_auth" {
 
 
 resource "aws_instance" "web" {
-  ami           = data.aws_ami.server_ami.id
-  instance_type = "t3.micro"
+  ami                    = data.aws_ami.server_ami.id
+  instance_type          = "t3.micro"
+  key_name               = aws_key_pair.dev_env_auth.key_name # Can use id as well
+  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  subnet_id              = aws_subnet.dev_env_subnet.id
+  user_data              = file("userdata.tpl") # Path to your user data script
+  root_block_device {
+    volume_size = 10 # Size in GB
+  }
 
   tags = {
     Name = "DevEnvironmentNode"
-  }
-
-  key_name = aws_key_pair.dev_env_auth.key_name # Can use id as well
-
-  vpc_security_group_ids = [aws_security_group.allow_tls.id]
-  subnet_id              = aws_subnet.dev_env_subnet.id
-
-  root_block_device {
-    volume_size = 10 # Size in GB
   }
 }
