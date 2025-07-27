@@ -1,3 +1,17 @@
+locals {
+  # expand "~" into the absolute home directory
+  home_path = pathexpand("~")
+
+  # on Windows this will start with "C:\" (or other drive letter)+backslash
+  is_windows = length(regexall("^[A-Za-z]:\\\\", local.home_path)) > 0
+
+  # pick which template (if you need different ones) or you can point both to the same file
+  ssh_tpl = local.is_windows ? "windows-ssh-config.tpl" : "linux-ssh-config.tpl"
+
+  # set interpreter based on OS
+  interpreter = local.is_windows ? ["PowerShell", "-Command"] : ["bash", "-c"]
+}
+
 resource "aws_vpc" "dev_env_vpc" {
   cidr_block           = "10.123.0.0/16"
   enable_dns_hostnames = true
@@ -84,6 +98,15 @@ resource "aws_instance" "web" {
 
   root_block_device {
     volume_size = 10 # Size in GB
+  }
+
+  provisioner "local-exec" {
+    command = templatefile(local.ssh_tpl, {
+      hostname     = self.public_ip
+      user         = "ubuntu"
+      identityfile = "~/.ssh/dev_env_key"
+    })
+    interpreter = local.interpreter # Use PowerShell on Windows, bash on Linux/macOS
   }
 
   tags = {
