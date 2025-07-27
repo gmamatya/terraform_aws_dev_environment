@@ -57,12 +57,20 @@ The infrastructure is deployed within a custom Amazon VPC to ensure network isol
     ```terraform
     cidr_ipv4 = "0.0.0.0/0"
     ```
+4. **Generating an ED25519 SSH Key**
 
-4.  **Deploy the infrastructure:**
+    To create an ED25519 SSH key for secure authentication, run the following command:
+
+    ```bash
+    ssh-keygen -t ed25519 -f ~/.ssh/dev_env_key -C "your_email@example.com"
+    ```
+    The terraform script will refer to the generated key.
+
+5.  **Deploy the infrastructure:**
 
     ```bash
     terraform apply
     ```
-4.  **Connect with VS Code:**
+6.  **Connect with VS Code:**
     -   Once the `terraform apply` command is complete, the public IP of the EC2 instance will be displayed as an output.
     -   Use the VS Code Remote - SSH extension to connect to the EC2 instance using the public IP and the private key you specified.

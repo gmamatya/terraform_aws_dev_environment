@@ -65,3 +65,8 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
+
+resource "aws_key_pair" "dev_env_auth" {
+  key_name   = "dev_env_auth_key"
+  public_key = file("~/.ssh/dev_env_key.pub") # Path to your public key
+}
