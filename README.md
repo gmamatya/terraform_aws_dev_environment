@@ -50,7 +50,16 @@ The infrastructure is deployed within a custom Amazon VPC to ensure network isol
     ```bash
     terraform init
     ```
-3.  **Deploy the infrastructure:**
+3.  **Create a `terraform.tfvars` file:**
+
+    Create a `terraform.tfvars` file in the root of the project and add the following content, replacing the placeholder with your desired CIDR block:
+
+    ```terraform
+    cidr_ipv4 = "0.0.0.0/0"
+    ```
+
+4.  **Deploy the infrastructure:**
+
     ```bash
     terraform apply
     ```
