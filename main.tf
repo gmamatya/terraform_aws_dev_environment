@@ -70,3 +70,22 @@ resource "aws_key_pair" "dev_env_auth" {
   key_name   = "dev_env_auth_key"
   public_key = file("~/.ssh/dev_env_key.pub") # Path to your public key
 }
+
+
+resource "aws_instance" "web" {
+  ami           = data.aws_ami.server_ami.id
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "DevEnvironmentNode"
+  }
+
+  key_name = aws_key_pair.dev_env_auth.key_name # Can use id as well
+
+  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  subnet_id              = aws_subnet.dev_env_subnet.id
+
+  root_block_device {
+    volume_size = 10 # Size in GB
+  }
+}
